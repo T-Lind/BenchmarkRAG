@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 from ragstack_colbert import CassandraDatabase, ColbertEmbeddingModel, ColbertVectorStore, ColbertRetriever
+import json
+import time
 
 load_dotenv()
 
@@ -17,10 +19,19 @@ retriever = ColbertRetriever(embedding_model=embedding_model, database=database)
 
 def retrieve_nearest_documents(query, k=5):
     results = retriever.text_search(query, k=k)
+    indices = []
     for i, result in enumerate(results):
-        print(int(float(result[0].metadata['index'])))
+        indices.append(int(float(result[0].metadata['index'])))
+    return indices
 
+results = []
+with open('dataset/queries/holy_grail.txt', 'r') as file:
+    start = time.time()
+    for query in file.readlines():
+        results.append(retrieve_nearest_documents(query))
+    end = time.time()
+print(f"Processing completed in {end - start:.2f} seconds")
+storage_data = {"results": results}
 
-if __name__ == "__main__":
-    query = input("Enter your query: ")
-    retrieve_nearest_documents(query)
+with open('/Users/tiernan.lindauer/PycharmProjects/BenchmarkRAG/astra_results.json', 'w') as file:
+    json.dump(storage_data, file)

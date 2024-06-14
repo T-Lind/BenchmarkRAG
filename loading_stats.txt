@@ -1,3 +1,0 @@
-AstraDB: Monty Python Script: 1412.31 seconds
-Pinecone: 3.19 seconds
-
