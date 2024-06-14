@@ -2,19 +2,16 @@ import os
 from dotenv import load_dotenv
 from ragstack_colbert import CassandraDatabase, ColbertEmbeddingModel, ColbertVectorStore, ColbertRetriever
 
-# Load environment variables
 load_dotenv()
 
 astra_database_id = os.getenv('ASTRA_DATABASE_ID')
 astra_token = os.getenv('ASTRA_TOKEN')
 keyspace = "default_keyspace"
 
-# Initialize AstraDB
 database = CassandraDatabase.from_astra(astra_token=astra_token, database_id=astra_database_id, keyspace=keyspace)
 embedding_model = ColbertEmbeddingModel()
 vector_store = ColbertVectorStore(database=database, embedding_model=embedding_model)
 
-# Corrected initialization for ColbertRetriever
 retriever = ColbertRetriever(embedding_model=embedding_model, database=database)
 
 
