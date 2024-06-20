@@ -55,6 +55,6 @@ for answer in answers:
 print("\n--\n\n")
 knn_retriever = KNNRetriever.from_texts(arctic_botany_texts, OpenAIEmbeddings(model='text-embedding-3-large'))
 
-knn_answers = knn_retriever.invoke(question, k=kc, score=True)
+knn_answers = knn_retriever.invoke(question, k=knn_retriever, score=True)
 for answer in knn_answers:
     print(f"Text: {answer.page_content}")
