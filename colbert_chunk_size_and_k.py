@@ -27,6 +27,7 @@ database_id = os.getenv("ASTRA_DB_ID_COLBERT2")
 keyspace = "ragulate"
 
 import logging
+
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("unstructured").setLevel(logging.ERROR)
 logging.getLogger("cassandra").setLevel(logging.ERROR)
@@ -142,13 +143,13 @@ def query_pipeline(k: int, chunk_size: int, **kwargs):
     prompt = ChatPromptTemplate.from_template(prompt_template)
 
     rag_chain = (
-        {
-            "context": vector_store.as_retriever(search_kwargs={"k": k}),
-            "question": RunnablePassthrough(),
-        }
-        | prompt
-        | llm
-        | StrOutputParser()
+            {
+                "context": vector_store.as_retriever(search_kwargs={"k": k}),
+                "question": RunnablePassthrough(),
+            }
+            | prompt
+            | llm
+            | StrOutputParser()
     )
 
     return rag_chain
