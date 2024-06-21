@@ -2,6 +2,7 @@ import os
 import time
 from pathlib import Path
 from typing import List
+import logging
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import UnstructuredFileLoader
@@ -26,7 +27,6 @@ astra_token = os.getenv("ASTRA_DB_TOKEN_COLBERT2")
 database_id = os.getenv("ASTRA_DB_ID_COLBERT2")
 keyspace = "ragulate"
 
-import logging
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("unstructured").setLevel(logging.ERROR)
