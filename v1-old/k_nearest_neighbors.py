@@ -65,5 +65,5 @@ def main(corpus_folder, query_file, results_file):
 
 if __name__ == "__main__":
     corpus_folder = "dataset/movie_scripts/test"
-    query_file = "dataset/queries/holy_grail.txt"
-    main(corpus_folder, query_file, "dataset/queries/holy_grail_result.txt")
+    query_file = "../dataset/queries/holy_grail.txt"
+    main(corpus_folder, query_file, "../dataset/queries/holy_grail_result.txt")

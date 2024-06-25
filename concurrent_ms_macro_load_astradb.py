@@ -1,16 +1,16 @@
 from datasets import load_dataset
 from dotenv import load_dotenv
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 load_dotenv()
 
 ms_marco = load_dataset("microsoft/ms_marco", "v2.1")
-
 subset = ms_marco['train'].select(range(1000))
 
 import os
 from ragstack_colbert import CassandraDatabase, ColbertEmbeddingModel
 
-keyspace = "benchmarksmarco1000"
+keyspace = "benchmarksmarco1000parallel"
 database_id = os.getenv("ASTRA_DATABASE_ID")
 astra_token = os.getenv("ASTRA_TOKEN")
 
@@ -31,8 +31,23 @@ lc_vector_store = LangchainColbertVectorStore(
 
 all_texts = []
 all_metadatas = []
-i = 0
+I = 0
 for row in subset:
     all_texts.extend(row['passages']['passage_text'])
-    all_metadatas.extend([{'row_id': i} for _ in row['passages']['is_selected']])
-    i += 1
+    all_metadatas.extend([{'row_id': I} for _ in row['passages']['is_selected']])
+    I += 1
+
+
+def add_texts_batch(start_idx):
+    batch_texts = all_texts[start_idx:start_idx + 20]
+    batch_metadatas = all_metadatas[start_idx:start_idx + 20]
+    lc_vector_store.add_texts(batch_texts, metadatas=batch_metadatas)
+
+
+batch_size = 20
+num_batches = len(all_texts) // batch_size
+
+with ThreadPoolExecutor(max_workers=1000) as executor:
+    futures = [executor.submit(add_texts_batch, i * batch_size) for i in range(num_batches + 1)]
+    for future in as_completed(futures):
+        future.result()

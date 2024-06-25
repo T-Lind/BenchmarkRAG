@@ -25,7 +25,7 @@ def retrieve_nearest_documents(query, k=5):
     return indices
 
 results = []
-with open('dataset/queries/holy_grail.txt', 'r') as file:
+with open('../dataset/queries/holy_grail.txt', 'r') as file:
     start = time.time()
     for query in file.readlines():
         results.append(retrieve_nearest_documents(query))

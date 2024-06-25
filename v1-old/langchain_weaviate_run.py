@@ -42,7 +42,7 @@ def load_and_split_text(folder_path):
     return texts
 
 
-corpus = load_and_split_text("dataset/movie_scripts/test")
+corpus = load_and_split_text("../dataset/movie_scripts/test")
 
 docs = []
 index = 0

@@ -41,7 +41,7 @@ if index_name not in pc.list_indexes().names():
 
 index = pc.Index(index_name)
 
-corpus = load_and_split_text("dataset/movie_scripts/test")
+corpus = load_and_split_text("../dataset/movie_scripts/test")
 
 # Use default tf-idf values
 bm25_encoder = BM25Encoder().default()
