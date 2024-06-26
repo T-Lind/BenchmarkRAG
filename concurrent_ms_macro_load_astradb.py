@@ -1,16 +1,17 @@
 from datasets import load_dataset
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
+import os
+from ragstack_colbert import CassandraDatabase, ColbertEmbeddingModel
+from ragstack_langchain.colbert import ColbertVectorStore as LangchainColbertVectorStore
 
 load_dotenv()
 
 ms_marco = load_dataset("microsoft/ms_marco", "v2.1")
-subset = ms_marco['train'].select(range(1000))
+subset = ms_marco['train']  # Do all of it
 
-import os
-from ragstack_colbert import CassandraDatabase, ColbertEmbeddingModel
-
-keyspace = "benchmarksmarco1000parallel"
+keyspace = "benchmarksmarcoall"
 database_id = os.getenv("ASTRA_DATABASE_ID")
 astra_token = os.getenv("ASTRA_TOKEN")
 
@@ -21,8 +22,6 @@ database = CassandraDatabase.from_astra(
 )
 
 embedding_model = ColbertEmbeddingModel()
-
-from ragstack_langchain.colbert import ColbertVectorStore as LangchainColbertVectorStore
 
 lc_vector_store = LangchainColbertVectorStore(
     database=database,
@@ -49,5 +48,5 @@ num_batches = len(all_texts) // batch_size
 
 with ThreadPoolExecutor(max_workers=1000) as executor:
     futures = [executor.submit(add_texts_batch, i * batch_size) for i in range(num_batches + 1)]
-    for future in as_completed(futures):
+    for future in tqdm(as_completed(futures)):
         future.result()
